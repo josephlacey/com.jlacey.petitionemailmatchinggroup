@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <CustomGroups>
+    <CustomGroup>
+      <name>Email_Recipient</name>
+      <title>Petition Email Recipient</title>
+      <extends>Survey</extends>
+      <style>Inline</style>
+      <collapse_display>1</collapse_display>
+      <weight>3</weight>
+      <is_active>1</is_active>
+      <is_multiple>0</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <is_reserved>1</is_reserved>
+    </CustomGroup>
+    <CustomGroup>
+      <name>Thank_You_Message</name>
+      <title>Email Message to Recipient to Thank for Support</title>
+      <extends>Survey</extends>
+      <style>Inline</style>
+      <collapse_display>1</collapse_display>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_multiple>0</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <is_reserved>1</is_reserved>
+    </CustomGroup>
+    <CustomGroup>
+      <name>Thank_You_Email_to_Recipient</name>
+      <title>Thank You Email Message sent to Recipient</title>
+      <extends>Activity</extends>
+      <extends_entity_column_value>32</extends_entity_column_value>
+      <style>Inline</style>
+      <collapse_display>1</collapse_display>
+      <weight>6</weight>
+      <is_active>1</is_active>
+      <is_multiple>0</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <is_reserved>1</is_reserved>
+    </CustomGroup>
+  </CustomGroups>
+  <CustomFields>
+    <CustomField>
+      <name>Email_Recipient_System</name>
+      <label>Email Recipient System</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>1</weight>
+      <help_post>Select a system for sending emails to decision-makers or the press from this petition.</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>email_recipient_system</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>email_recipient_system</option_group_name>
+      <custom_group_name>Email_Recipient</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Recipient_Matching_Group</name>
+      <label>Recipient Matching Group(s)</label>
+      <data_type>String</data_type>
+      <html_type>Multi-Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>40</weight>
+      <help_post>The group of the petition targets.  The recipient will be matched on the matching field.</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <column_name>email_recipient_matching_group</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>recipient_matching_group_options</option_group_name>
+      <custom_group_name>Email_Recipient</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Recipient_Matching_Group_Level</name>
+      <label>Recipient Matching Group District Level</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>41</weight>
+      <help_post>The level of districting we're checking against.  This must match the recipients level.</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <column_name>email_recipient_matching_group_level</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>recipient_matching_group_level_options</option_group_name>
+      <custom_group_name>Email_Recipient</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Recipient_Matching_Group_Bill</name>
+      <label>Sponsored Bill</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>42</weight>
+      <help_post>This is the bill number to check for sponsorship</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <column_name>recipient_matching_group_bill</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Email_Recipient</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Subject</name>
+      <label>Subject</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <help_post>This is the subject line for outgoing emails</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>thank_you_subject</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Message</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Subject_Field</name>
+      <label>Subject Field</label>
+      <data_type>Int</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>3</weight>
+      <help_post>The ID number of the activity custom field storing the petition subject.</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>thank_you_subject_field</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Message</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Message</name>
+      <label>Message</label>
+      <data_type>Memo</data_type>
+      <html_type>RichTextEditor</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>9</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>10</note_rows>
+      <column_name>thank_you_message</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Message</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Message_Field</name>
+      <label>Message Field</label>
+      <data_type>Int</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>10</weight>
+      <help_post>The ID number of the activity custom field storing the petition message.</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>thank_you_message_field</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Message</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Email_Subject</name>
+      <label>Thank You Subject</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>thank_you_email_to_recipient_subject</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Email_to_Recipient</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Thank_You_Email_Message</name>
+      <label>Thank You Message</label>
+      <data_type>Memo</data_type>
+      <html_type>RichTextEditor</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>9</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>10</note_rows>
+      <column_name>thank_you_email_to_recipient_message</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Thank_You_Email_to_Recipient</custom_group_name>
+    </CustomField>
+  </CustomFields>
+  <OptionGroups>
+    <OptionGroup>
+      <name>email_recipient_system</name>
+      <title>Recipient System</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>recipient_matching_group_options</name>
+      <title>Recipient Matching Group</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>recipient_matching_group_level_options</name>
+      <title>Recipient Matching District Level</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+  <OptionValues>
+    <OptionValue>
+      <label>Matching Group Recipient</label>
+      <value>Matchinggroup</value>
+      <name>Matching_Group_Recipient</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>email_recipient_system</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>
