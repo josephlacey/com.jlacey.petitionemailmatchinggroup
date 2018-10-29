@@ -77,15 +77,14 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
     //Submitters matching fields
     //TODO Should this be abstracted with the Electoral API
     //API Key
-    $apikey = civicrm_api3('Setting', 'getvalue', ['name' => 'googleCivicInformationAPIKey']);
+    $googleApiKey = civicrm_api3('Setting', 'getvalue', ['name' => 'googleCivicInformationAPIKey']);
 
     //Assemble the API URL
     $petition_level = $this->petitionEmailVal[$this->fields['Recipient_Matching_Group_Level']];
     $streetAddress = rawurlencode($form->_submitValues['street_address-1']);
     $city = rawurlencode($form->_submitValues['city-1']);
     $stateProvinceAbbrev = CRM_Core_PseudoConstant::stateProvinceAbbreviation($form->_submitValues['state_province-1']);
-    //TODO Are the roles correct?
-    $url = "https://www.googleapis.com/civicinfo/v2/representatives?fields=divisions&levels=$petition_level&roles=legislatorUpperBody&roles=legislatorLowerBody&key=$apikey&address=$streetAddress%20$city%20$stateProvinceAbbrev";
+    $url = "https://www.googleapis.com/civicinfo/v2/representatives?fields=divisions&levels=$petition_level&roles=legislatorUpperBody&roles=legislatorLowerBody&key=$googleApiKey&address=$streetAddress%20$city%20$stateProvinceAbbrev";
 
     //Intitalize curl
     $ch = curl_init();
@@ -95,19 +94,19 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
     $verifySSL = civicrm_api('Setting', 'getvalue', ['version' => 3, 'name' => 'verifySSL']);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
     //Get results from API and decode the JSON
-    $curl_return = json_decode(curl_exec($ch), TRUE);
+    $districts = json_decode(curl_exec($ch), TRUE);
     //Close curl
     curl_close($ch);
 
     //Process the response
     //Check for errors first
-    if (isset($curl_return['error']) ) {
+    if (isset($districts['error']) ) {
       //FIXME Some user feedback
       return;
     } else {
       //Process divisions
       $ocdDivision = strtolower("ocd-division/country:us/state:$stateProvinceAbbrev");
-      foreach($curl_return['divisions'] as $divisionKey => $division) {
+      foreach($districts['divisions'] as $divisionKey => $division) {
         //Check if there's a district
         $divisionDistrict = '';
         //Country
@@ -159,7 +158,30 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
         }
       }
 
+      // Fetch bill for sponsorship check
+      $billNumber = $this->petitionEmailVal[$this->fields['Recipient_Matching_Group_Bill']];
+      if (!empty($billNumber)) {
+        $proPublicaApiKey = civicrm_api3('Setting', 'getvalue', ['name' => 'proPublicaCongressAPIKey']);
+
+        //TODO Congress Number is hardcoded here
+        $billUrl = "https://api.propublica.org/congress/v1/115/bills/$billNumber/cosponsors.json";
+
+        //Intitalize curl
+        $ch = curl_init();
+        //Set curl options
+        curl_setopt($ch, CURLOPT_URL, $billUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("X-API-Key: $proPublicaApiKey"));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        $verifySSL = civicrm_api('Setting', 'getvalue', ['version' => 3, 'name' => 'verifySSL']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
+        //Get results from API and decode the JSON
+        $billCosponsors = json_decode(curl_exec($ch), TRUE);
+        //Close curl
+        curl_close($ch);
+      }
+
       //Process matching fields
+      //TODO There's probably a better way to do this
       $electoral_fields = civicrm_api3('CustomField', 'get', ['return' => ["name"],'custom_group_id' => "electoral_districts",]);
       foreach($electoral_fields['values'] as $electoral_field_id => $electoral_field) {
         $matching_fields[substr($electoral_field['name'], 10)] = 'custom_' . $electoral_field_id;
@@ -181,20 +203,35 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
           'options' => ['limit' => 999999],]
         );
         foreach ($groupContacts['values'] as $groupContact) {
-          $contact = civicrm_api3('Contact', 'getsingle', [ "sequential" => 1,'return' => ["display_name", "email" , $matching_fields['district']],'id' => $groupContact['contact_id'],]);
+          $contact = civicrm_api3('Contact', 'getsingle', [ "sequential" => 1,'return' => ["display_name", "email", "external_identifier", $matching_fields['district']],'id' => $groupContact['contact_id'],]);
+          //FIXME being empty here might not be deterministic.
           if ($contact[$matching_fields['district']] == $divisionDistrict ||
             empty($contact[$matching_fields['district']])) {
 
+            //Set default message to urge support
+            $subject = $support_subject;
+            $message = $support_message;
+            $which_message = 'urging support';
             //Check bill sponsorship and change message if so
-            $sponsor = FALSE;
-            if ($sponsor) {
-              $subject = $thank_you_subject;
-              $message = $thank_you_message;
-              $which_message = 'thanking for support';
-            } else {
-              $subject = $support_subject;
-              $message = $support_message;
-              $which_message = 'urging support';
+            if (!empty($contact['external_identifier']) &&
+              $billCosponsors['status'] == 'OK'){
+              //Check if legislator is the primary sponsor
+              if ($billCosponsors['results'][0]['sponsor_id'] == $contact['external_identifier']) {
+                //Overwrite urge support message with thank you message
+                $subject = $thank_you_subject;
+                $message = $thank_you_message;
+                $which_message = 'thanking for support';
+              } else {
+                //if primary sponsor, check if cosponsor
+                foreach($billCosponsors['results'][0]['cosponsors'] as $cosponsor){
+                  if ($cosponsor['cosponsor_id'] == $contact['external_identifier']) {
+                    //Overwrite urge support message with thank you message
+                    $subject = $thank_you_subject;
+                    $message = $thank_you_message;
+                    $which_message = 'thanking for support';
+                  }
+                }
+              }
             }
 
             // Setup email message:
