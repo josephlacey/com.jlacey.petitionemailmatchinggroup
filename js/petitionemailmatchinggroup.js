@@ -18,7 +18,7 @@ function recipient_system_matching_group (fieldId){
   CRM.api3('CustomField', 'get', {
     "sequential": 1,
     "return": ["id"],
-    "name": {"IN":["Recipient_Matching_Group","Recipient_Matching_Group_Field"]}
+    "name": {"IN":["Recipient_Matching_Group","Recipient_Matching_Group_Level","Recipient_Matching_Group_Bill"]}
   }).done(function(recipientMatchingGroupField) {
     if (CRM.$("select[id*='custom_" + fieldId + "'] option:selected").val() == 'Matchinggroup') {
       //Show Matching Group and Matching Group Field fields
