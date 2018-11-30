@@ -99,14 +99,14 @@
     </CustomField>
     <CustomField>
       <name>Recipient_Matching_Group_Bill</name>
-      <label>Sponsored Bill</label>
+      <label>Sponsored Bill(s)</label>
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>42</weight>
-      <help_post>This is the bill number to check for sponsorship</help_post>
+      <help_post>This is the bill number(s) to check for sponsorship.  Enter as machine name, so S. 1386 should be entered as s1386, and H.R. 2942 should be entered as hr2942.  Multiple bills should be separated by a comma. This only works for the US Congress.</help_post>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>128</text_length>

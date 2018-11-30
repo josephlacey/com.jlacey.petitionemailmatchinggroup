@@ -159,25 +159,28 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
       }
 
       // Fetch bill for sponsorship check
-      $billNumber = $this->petitionEmailVal[$this->fields['Recipient_Matching_Group_Bill']];
-      if (!empty($billNumber)) {
+      $billNumbers = $this->petitionEmailVal[$this->fields['Recipient_Matching_Group_Bill']];
+      if (!empty($billNumbers)) {
+        $bills = explode(',', $billNumbers);
         $proPublicaApiKey = civicrm_api3('Setting', 'getvalue', ['name' => 'proPublicaCongressAPIKey']);
 
-        //TODO Congress Number is hardcoded here
-        $billUrl = "https://api.propublica.org/congress/v1/115/bills/$billNumber/cosponsors.json";
+        foreach($bills as $bill) {
+          //TODO Congress Number is hardcoded here
+          $billUrl = "https://api.propublica.org/congress/v1/115/bills/$bill/cosponsors.json";
 
-        //Intitalize curl
-        $ch = curl_init();
-        //Set curl options
-        curl_setopt($ch, CURLOPT_URL, $billUrl);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array("X-API-Key: $proPublicaApiKey"));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $verifySSL = civicrm_api('Setting', 'getvalue', ['version' => 3, 'name' => 'verifySSL']);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
-        //Get results from API and decode the JSON
-        $billCosponsors = json_decode(curl_exec($ch), TRUE);
-        //Close curl
-        curl_close($ch);
+          //Intitalize curl
+          $ch = curl_init();
+          //Set curl options
+          curl_setopt($ch, CURLOPT_URL, $billUrl);
+          curl_setopt($ch, CURLOPT_HTTPHEADER, array("X-API-Key: $proPublicaApiKey"));
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+          $verifySSL = civicrm_api('Setting', 'getvalue', ['version' => 3, 'name' => 'verifySSL']);
+          curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
+          //Get results from API and decode the JSON
+          $billCosponsors[$bill] = json_decode(curl_exec($ch), TRUE);
+          //Close curl
+          curl_close($ch);
+        }
       }
 
       //Process matching fields
@@ -213,22 +216,26 @@ class CRM_Petitionemail_Interface_Matchinggroup extends CRM_Petitionemail_Interf
             $message = $support_message;
             $which_message = 'urging support';
             //Check bill sponsorship and change message if so
-            if (!empty($contact['external_identifier']) &&
-              $billCosponsors['status'] == 'OK'){
-              //Check if legislator is the primary sponsor
-              if ($billCosponsors['results'][0]['sponsor_id'] == $contact['external_identifier']) {
-                //Overwrite urge support message with thank you message
-                $subject = $thank_you_subject;
-                $message = $thank_you_message;
-                $which_message = 'thanking for support';
-              } else {
-                //if primary sponsor, check if cosponsor
-                foreach($billCosponsors['results'][0]['cosponsors'] as $cosponsor){
-                  if ($cosponsor['cosponsor_id'] == $contact['external_identifier']) {
+            if (!empty($contact['external_identifier'])) {
+              //Process each bill included
+              foreach($billCosponsors as $billNumber => $cosponsors) {
+                if ($cosponsors['status'] == 'OK') {
+                  //Check if legislator is the primary sponsor
+                  if ($cosponsors['results'][0]['sponsor_id'] == $contact['external_identifier']) {
                     //Overwrite urge support message with thank you message
                     $subject = $thank_you_subject;
                     $message = $thank_you_message;
                     $which_message = 'thanking for support';
+                  } else {
+                    //if not primary sponsor, check if cosponsor
+                    foreach($cosponsors['results'][0]['cosponsors'] as $cosponsor){
+                      if ($cosponsor['cosponsor_id'] == $contact['external_identifier']) {
+                        //Overwrite urge support message with thank you message
+                        $subject = $thank_you_subject;
+                        $message = $thank_you_message;
+                        $which_message = 'thanking for support';
+                      }
+                    }
                   }
                 }
               }
