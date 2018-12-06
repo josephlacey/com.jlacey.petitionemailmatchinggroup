@@ -150,6 +150,21 @@ function petitionemailmatchinggroup_civicrm_buildForm($formName, &$form) {
     case 'CRM_Campaign_Form_Petition':
       CRM_Core_Resources::singleton()->addScriptFile('com.jlacey.petitionemailmatchinggroup', 'js/messageField.js');
       break;
+    case 'CRM_Campaign_Form_Petition_Signature':
+      //Check that the recpipient is matching group
+      $petitionRecipientFieldId = civicrm_api3('CustomField', 'getvalue', ['return' => 'id', 'name' => 'Email_Recipient_System']);
+      $petitionRecipient = civicrm_api3('Survey', 'getvalue', ['return' => "custom_$petitionRecipientFieldId", 'id' => "$form->_surveyId"]);
+      if ($petitionRecipient == 'Matchinggroup') {
+        //If so, pass in the Google API Key and the Petition level for to signature page js handling
+        $googleApiKey = civicrm_api3('Setting', 'getvalue', ['name' => 'googleCivicInformationAPIKey']);
+        $petitionLevelFieldId = civicrm_api3('CustomField', 'getvalue', ['return' => 'id', 'name' => 'Recipient_Matching_Group_Level']);
+        $petitionLevel = civicrm_api3('Survey', 'getvalue', ['return' => "custom_$petitionLevelFieldId", 'id' => "$form->_surveyId"]);
+        CRM_Core_Resources::singleton()->addVars('signature', ['googleApiKey' => $googleApiKey]);
+        CRM_Core_Resources::singleton()->addVars('signature', ['petitionLevel' => $petitionLevel]);
+        //Invoke the js file which hides the activity profile and show the user their matching legislators
+        CRM_Core_Resources::singleton()->addScriptFile('com.jlacey.petitionemailmatchinggroup', 'js/signature.js');
+      }
+      break;
   }
 }
 
