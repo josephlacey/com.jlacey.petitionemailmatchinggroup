@@ -1,6 +1,6 @@
 # com.jlacey.petitionemailmatchinggroup
 
-This provide a Matching Group field option to the Petition Email Recipient System list.
+This provides a Matching Group field option to the Petition Email Recipient System list.
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
