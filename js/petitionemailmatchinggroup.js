@@ -4,16 +4,14 @@
     "return": ["id"],
     "name": "Email_Recipient_System"
   }).done(function(recipientSystemField) {
-    //Page load
-    recipient_system_matching_group(recipientSystemField.id);
-    //When the salutation type changes
+    update_matching_group_recipient_display(recipientSystemField.id);
     CRM.$("select[id*='custom_" + recipientSystemField.id + "']").change(function() {
-      recipient_system_matching_group(recipientSystemField.id);
+      update_matching_group_recipient_display(recipientSystemField.id);
     });
   });
 })(CRM.$);
 
-function recipient_system_matching_group (fieldId){
+function update_matching_group_recipient_display(fieldId){
   //Process the selected option
   CRM.api3('CustomField', 'get', {
     "sequential": 1,
@@ -25,32 +23,12 @@ function recipient_system_matching_group (fieldId){
       CRM.$(recipientMatchingGroupField.values).each(function(){
         CRM.$("tr[class*='custom_" + this.id + "']").show();
       });
-      recipient_single_hide_matching_group(true);
     }
-    if (CRM.$("select[id*='custom_" + fieldId + "'] option:selected").val() != 'Matchinggroup') {
+    else {
       CRM.$(recipientMatchingGroupField.values).each(function(){
         CRM.$("tr[class*='custom_" + this.id + "']").hide();
       });
     }
-    if (CRM.$("select[id*='custom_" + fieldId + "'] option:selected").val() == 'Single') {
-      recipient_single_hide_matching_group(false);
-    }
   });
 }
 
-function recipient_single_hide_matching_group(hide){
-  CRM.api3('CustomField', 'get', {
-    "return": ["id"],
-    "name": {"IN":["Recipient_Name","Recipient_Email"]}
-  }).done(function(recipientSingle) {
-    if (hide) {
-      CRM.$.each(recipientSingle.values, function(id,fieldId) {
-        CRM.$("tr[class*='custom_" + id + "']").hide();
-      });
-    } else {
-      CRM.$.each(recipientSingle.values, function(id, fieldId) {
-        CRM.$("tr[class*='custom_" + id + "']").show();
-      });
-    }
-  });
-}
