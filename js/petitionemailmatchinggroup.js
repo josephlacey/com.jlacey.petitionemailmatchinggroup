@@ -23,11 +23,13 @@ function update_matching_group_recipient_display(fieldId){
       CRM.$(recipientMatchingGroupField.values).each(function(){
         CRM.$("tr[class*='custom_" + this.id + "']").show();
       });
+      CRM.$('.custom-group-Thank_You_Message').show();
     }
     else {
       CRM.$(recipientMatchingGroupField.values).each(function(){
         CRM.$("tr[class*='custom_" + this.id + "']").hide();
       });
+      CRM.$('.custom-group-Thank_You_Message').hide();
     }
   });
 }
